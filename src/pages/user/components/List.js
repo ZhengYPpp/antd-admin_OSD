@@ -52,12 +52,14 @@ class List extends PureComponent {
         title: <Trans>Age</Trans>,
         dataIndex: 'age',
         key: 'age',
+        sorter: (a, b) => a.age - b.age,
       },
       {
         title: <Trans>Gender</Trans>,
         dataIndex: 'isMale',
         key: 'isMale',
         render: text => <span>{text ? 'Male' : 'Female'}</span>,
+        sorter: (a, b) => a.isMale - b.isMale,
       },
       {
         title: <Trans>Phone</Trans>,
