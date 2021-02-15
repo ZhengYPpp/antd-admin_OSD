@@ -4,6 +4,10 @@ import { Form, Input, InputNumber, Radio, Modal, Cascader } from 'antd'
 import { Trans } from '@lingui/react'
 import city from 'utils/city'
 
+// diff
+import { diff } from 'deep-object-diff'
+
+
 const FormItem = Form.Item
 
 const formItemLayout = {
@@ -16,6 +20,8 @@ const formItemLayout = {
 }
 
 class UserModal extends PureComponent {
+  state = {changeValue: {}}
+
   formRef = React.createRef()
 
   handleOk = () => {
@@ -35,12 +41,48 @@ class UserModal extends PureComponent {
       })
   }
 
+  handleCheckFieldChange = (e, v) => {
+    this.setState({ changeValue: { ...v } })
+  }
+
+
+  handleAfterClose = () => {
+    this.setState({ changeValue: {} })
+  }
+
+
   render() {
-    const { i18n, item = {}, onOk, form, ...modalProps } = this.props
+
+    const { i18n, item = {}, onOk,  form, ...modalProps } = this.props
+
+    const { changeValue } = this.state
+
+    const { avatar, createTime, id, ...restItem } = item
+
+    const currentValue = {
+      ...restItem,
+      address: item.address && item.address.split(' '),
+    }
+
+    const different = diff(currentValue, changeValue)
+
+    const changed = Object.keys(changeValue).length > 0
+
+    const okButtonProps = {
+      disabled: !changed || !Object.keys(different).length > 0 ? true : false,
+    }
+
+    const checkChange = changed && Object.keys(different).length > 0
+
 
     return (
-      <Modal {...modalProps} onOk={this.handleOk}>
-        <Form ref={this.formRef} name="control-ref" initialValues={{ ...item, address: item.address && item.address.split(' ') }} layout="horizontal">
+      <Modal {...modalProps} 
+      onOk={this.handleOk}         
+      okButtonProps={okButtonProps}
+      destroyOnClose
+      afterClose={this.handleAfterClose}
+>
+        <Form ref={this.formRef} name="control-ref" initialValues={{ ...item, address: item.address && item.address.split(' ') }} layout="horizontal" onValuesChange={this.handleCheckFieldChange}>
           <FormItem name='name' rules={[{ required: true }]}
             label={i18n.t`Name`} hasFeedback {...formItemLayout}>
             <Input />
