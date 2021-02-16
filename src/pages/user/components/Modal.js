@@ -50,10 +50,16 @@ class UserModal extends PureComponent {
     this.setState({ changeValue: {} })
   }
 
+  handleOnCancel = (checkChange) => {
+    const { onCancel } = this.props
+
+    onCancel(checkChange)
+  }
+
 
   render() {
 
-    const { i18n, item = {}, onOk,  form, ...modalProps } = this.props
+    const { i18n, item = {}, onOk, onCancel, form, ...modalProps } = this.props
 
     const { changeValue } = this.state
 
@@ -79,6 +85,7 @@ class UserModal extends PureComponent {
       <Modal {...modalProps} 
       onOk={this.handleOk}         
       okButtonProps={okButtonProps}
+      onCancel={() => this.handleOnCancel(checkChange)}
       destroyOnClose
       afterClose={this.handleAfterClose}
 >
@@ -131,6 +138,7 @@ UserModal.propTypes = {
   type: PropTypes.string,
   item: PropTypes.object,
   onOk: PropTypes.func,
+  onCancel: PropTypes.func,
 }
 
 export default UserModal

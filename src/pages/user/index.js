@@ -2,13 +2,16 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { history } from 'umi'
 import { connect } from 'umi'
-import { Row, Col, Button, Popconfirm } from 'antd'
+import { Row, Col, Button, Popconfirm, Modal } from 'antd'
 import { withI18n } from '@lingui/react'
 import { Page } from 'components'
 import { stringify } from 'qs'
 import List from './components/List'
 import Filter from './components/Filter'
-import Modal from './components/Modal'
+import Modals from './components/Modal'
+
+const { confirm } = Modal
+
 
 @withI18n()
 @connect(({ user, loading }) => ({ user, loading }))
@@ -71,11 +74,31 @@ class User extends PureComponent {
           this.handleRefresh()
         })
       },
-      onCancel() {
-        dispatch({
-          type: 'user/hideModal',
-        })
+      onCancel: (boolean) => {
+        if (boolean) {
+          console.log('show modal')
+          confirm({
+            title: 'The data will not save. Do you Want to close the modal?',
+            content: '',
+            onOk() {
+              console.log('OK')
+              dispatch({
+                type: 'user/hideModal',
+                payload: {},
+              })
+            },
+            onCancel() {
+              console.log('Cancel')
+            },
+          })
+        } else {
+          dispatch({
+            type: 'user/hideModal',
+            payload: {},
+          })
+        }
       },
+
     }
   }
 
@@ -178,7 +201,7 @@ class User extends PureComponent {
           </Row>
         )}
         <List {...this.listProps} />
-        <Modal {...this.modalProps} />
+        <Modals {...this.modalProps} />
       </Page>
     )
   }
